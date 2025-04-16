@@ -1,0 +1,18 @@
+,ID,Title,Acceptance,Difficulty,Frequency,Link
+0,228,Summary Ranges,39.5%,Medium,1.2150060644991902, https://leetcode.com/problems/summary-ranges
+1,814,Binary Tree Pruning,74.5%,Medium,0.9358608280682522, https://leetcode.com/problems/binary-tree-pruning
+2,328,Odd Even Linked List,55.7%,Medium,0.6567155916373142, https://leetcode.com/problems/odd-even-linked-list
+3,290,Word Pattern,37.0%,Easy,0.5791869123738492, https://leetcode.com/problems/word-pattern
+4,322,Coin Change,35.5%,Medium,0.3391797675107801, https://leetcode.com/problems/coin-change
+5,138,Copy List with Random Pointer,36.4%,Medium,0.2656669388179564, https://leetcode.com/problems/copy-list-with-random-pointer
+6,1071,Greatest Common Divisor of Strings,52.9%,Easy,0.1218234451933884, https://leetcode.com/problems/greatest-common-divisor-of-strings
+7,204,Count Primes,31.5%,Easy,0.0279934304220021, https://leetcode.com/problems/count-primes
+8,412,Fizz Buzz,62.3%,Easy,0.0160517090105079, https://leetcode.com/problems/fizz-buzz
+9,53,Maximum Subarray,46.5%,Easy,0.0048693490141821, https://leetcode.com/problems/maximum-subarray
+10,66,Plus One,43.0%,Easy,0.0032621134783293, https://leetcode.com/problems/plus-one
+11,2,Add Two Numbers,33.9%,Medium,0.001688619111144, https://leetcode.com/problems/add-two-numbers
+12,203,Remove Linked List Elements,38.6%,Easy,0.0016237064659255, https://leetcode.com/problems/remove-linked-list-elements
+23,273,Integer to English Words,27.1%,Hard,0.0120810892503397, https://leetcode.com/problems/integer-to-english-words
+27,98,Validate Binary Search Tree,27.8%,Medium,0.0029437760440133, https://leetcode.com/problems/validate-binary-search-tree
+28,21,Merge Two Sorted Lists,53.5%,Easy,0.0022551737583973, https://leetcode.com/problems/merge-two-sorted-lists
+53,1390,Four Divisors,38.1%,Medium,0.0, https://leetcode.com/problems/four-divisors

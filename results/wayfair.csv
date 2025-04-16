@@ -1,0 +1,24 @@
+,ID,Title,Acceptance,Difficulty,Frequency,Link
+0,840,Magic Squares In Grid,37.3%,Easy,0.4449565940664958, https://leetcode.com/problems/magic-squares-in-grid
+1,811,Subdomain Visit Count,69.9%,Easy,0.2818511521409877, https://leetcode.com/problems/subdomain-visit-count
+2,1189,Maximum Number of Balloons,61.2%,Easy,0.1187457102154797, https://leetcode.com/problems/maximum-number-of-balloons
+3,759,Employee Free Time,66.3%,Hard,0.1014382428454883, https://leetcode.com/problems/employee-free-time
+4,1204,Last Person to Fit in the Elevator,69.8%,Medium,0.0851578083403068, https://leetcode.com/problems/last-person-to-fit-in-the-elevator
+5,1212,Team Scores in Football Tournament,55.8%,Medium,0.0786259423834273, https://leetcode.com/problems/team-scores-in-football-tournament
+6,85,Maximal Rectangle,37.7%,Hard,0.0285100082583777, https://leetcode.com/problems/maximal-rectangle
+7,718,Maximum Length of Repeated Subarray,49.4%,Medium,0.0269921920143562, https://leetcode.com/problems/maximum-length-of-repeated-subarray
+8,56,Merge Intervals,39.3%,Medium,0.0074386655924217, https://leetcode.com/problems/merge-intervals
+9,412,Fizz Buzz,62.3%,Easy,0.0068575615898703, https://leetcode.com/problems/fizz-buzz
+10,69,Sqrt(x),33.9%,Easy,0.0048810347059143, https://leetcode.com/problems/sqrtx
+11,125,Valid Palindrome,36.7%,Easy,0.0037979536727587, https://leetcode.com/problems/valid-palindrome
+12,5,Longest Palindromic Substring,29.5%,Medium,0.0021771085723255, https://leetcode.com/problems/longest-palindromic-substring
+13,210,Course Schedule II,40.7%,Medium,0.0018850146957713, https://leetcode.com/problems/course-schedule-ii
+20,443,String Compression,41.3%,Easy,0.0523337200490236, https://leetcode.com/problems/string-compression
+25,184,Department Highest Salary,36.7%,Medium,0.0180185055026783, https://leetcode.com/problems/department-highest-salary
+29,41,First Missing Positive,32.0%,Hard,0.0061633477076686, https://leetcode.com/problems/first-missing-positive
+30,53,Maximum Subarray,46.5%,Easy,0.0020745819379855, https://leetcode.com/problems/maximum-subarray
+35,1194,Tournament Winners,52.9%,Hard,0.4149438520627081, https://leetcode.com/problems/tournament-winners
+40,1014,Best Sightseeing Pair,52.5%,Medium,0.0903548750399561, https://leetcode.com/problems/best-sightseeing-pair
+53,1244,Design A Leaderboard,60.7%,Medium,0.0, https://leetcode.com/problems/design-a-leaderboard
+54,1405,Longest Happy String,49.0%,Medium,0.0, https://leetcode.com/problems/longest-happy-string
+55,1193,Monthly Transactions I,68.3%,Medium,0.0, https://leetcode.com/problems/monthly-transactions-i

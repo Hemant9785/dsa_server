@@ -1,0 +1,14 @@
+,ID,Title,Acceptance,Difficulty,Frequency,Link
+0,741,Cherry Pickup,33.9%,Hard,0.0245913357492859, https://leetcode.com/problems/cherry-pickup
+1,84,Largest Rectangle in Histogram,35.2%,Hard,0.0186611262216629, https://leetcode.com/problems/largest-rectangle-in-histogram
+2,269,Alien Dictionary,33.3%,Hard,0.0127309166940399, https://leetcode.com/problems/alien-dictionary
+3,994,Rotting Oranges,49.2%,Medium,0.0076307123411638, https://leetcode.com/problems/rotting-oranges
+4,155,Min Stack,44.5%,Easy,0.0047489107412817, https://leetcode.com/problems/min-stack
+8,123,Best Time to Buy and Sell Stock III,37.5%,Hard,0.011261380272539, https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii
+9,380,Insert Delete GetRandom O(1),47.5%,Medium,0.0098208498640944, https://leetcode.com/problems/insert-delete-getrandom-o1
+10,42,Trapping Rain Water,48.9%,Hard,0.0097625246556591, https://leetcode.com/problems/trapping-rain-water
+12,10,Regular Expression Matching,26.8%,Hard,0.0071865203293987, https://leetcode.com/problems/regular-expression-matching
+14,2,Add Two Numbers,33.9%,Medium,0.001688619111144, https://leetcode.com/problems/add-two-numbers
+25,967,Numbers With Same Consecutive Differences,39.4%,Medium,0.0, https://leetcode.com/problems/numbers-with-same-consecutive-differences
+26,982,Triples with Bitwise AND Equal To Zero,55.6%,Hard,0.0, https://leetcode.com/problems/triples-with-bitwise-and-equal-to-zero
+27,1423,Maximum Points You Can Obtain from Cards,42.6%,Medium,0.0, https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards
