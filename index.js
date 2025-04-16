@@ -9,6 +9,7 @@ const Comment = require('./models/Comment'); // Import the Comment model
 const Discussion = require('./models/Discussion'); // Assuming you have a Discussion model
 const User = require('./models/User'); // Assuming you have a User model
 const QuestionDiscussion = require('./models/QuestionDiscussion'); // Import the new model
+const axios = require('axios');
 require('dotenv').config();
 // Import models from models directory
 // const User = require('./models/User');
@@ -47,35 +48,25 @@ app.get('/api/companies', (req, res) => {
 });
 
 // GET endpoint for company-specific questions
-app.get('/api/questions/:company', (req, res) => {
+app.get('/api/questions/:company', async (req, res) => {
   const company = req.params.company.toLowerCase();
   
-  // Validate if company exists in our list
-  if (!COMPANIES.includes(company)) {
-    return res.status(404).json({ error: 'Company not found' });
-  }
+  // Construct the URL for the CSV file based on the company name
+  // console.log(company);
+  // console.log(COMPANIES);
+  const csvUrl = `https://raw.githubusercontent.com/Hemant9785/dsa_server/main/results/${company}.csv`;
 
+  try {
+    const response = await axios.get(csvUrl);
+    const data = response.data;
 
-  // Hardcoded file path
-  const filePath = `D:\\llm2\\dsa_website\\server\\results\\${company}.csv`;
-
-  // Check if file exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'Questions file not found' });
-  }
-
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.status(500).json({ error: 'Error reading questions file' });
-    }
-
+    // Parse the CSV data
     Papa.parse(data, {
       header: true,
       complete: (results) => {
         const questions = results.data
-          .filter(item => item.Link && item.Title) // Filter out any incomplete rows
-          .map((item) => ({
+          .filter(item => item.Link && item.Title) // Filter out incomplete rows
+          .map(item => ({
             link: item['Link'],
             difficulty: item['Difficulty'],
             title: item['Title'],
@@ -87,7 +78,10 @@ app.get('/api/questions/:company', (req, res) => {
         res.status(500).json({ error: 'Error parsing questions data' });
       }
     });
-  });
+  } catch (err) {
+    console.error("Error fetching file:", err);
+    return res.status(500).json({ error: 'Error fetching questions file' });
+  }
 });
 
 // Google Sign-In endpoint
