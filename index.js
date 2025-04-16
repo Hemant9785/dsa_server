@@ -11,6 +11,8 @@ const User = require('./models/User'); // Assuming you have a User model
 const QuestionDiscussion = require('./models/QuestionDiscussion'); // Import the new model
 const axios = require('axios');
 const Feedback = require('./models/Feedback'); // Import the Feedback model
+const authMiddleware = require('./authMiddleware'); // Import the middleware
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 // Import models from models directory
 // const User = require('./models/User');
@@ -32,14 +34,17 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true 
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
 
+// Apply the middleware to all routes except the Google Sign-In route
+app.use('/api', authMiddleware);
+
 // List of available companies
 const COMPANIES = [
-  "adobe", "airtel", "amazon", "amex", "app_dynamics", "apple", "arista", 
-  "atlassian", "audible", "bookingcom", "capitol_one", "cisco", "deshaw", 
-  "deutsche_bank", "flipkart", "goldman sachs", "google", "ibm", "infosys", 
-  "intel", "intuit", "jpmorgan", "mathworks", "meta", "microsoft", "nvidia", 
-  "oracle", "paypal", "paytm", "phonepe", "pinterest", "qualcomm", "salesforce", 
-  "samsung", "saplabs", "servicenow", "snapchat", "spotify", "uber", "visa", 
+  "adobe", "airtel", "amazon", "amex", "app_dynamics", "apple", "arista",
+  "atlassian", "audible", "bookingcom", "capitol_one", "cisco", "deshaw",
+  "deutsche_bank", "flipkart", "goldman sachs", "google", "ibm", "infosys",
+  "intel", "intuit", "jpmorgan", "mathworks", "meta", "microsoft", "nvidia",
+  "oracle", "paypal", "paytm", "phonepe", "pinterest", "qualcomm", "salesforce",
+  "samsung", "saplabs", "servicenow", "snapchat", "spotify", "uber", "visa",
   "walmart", "wayfair", "zoho", "zscaler"
 ];
 
@@ -51,7 +56,7 @@ app.get('/api/companies', (req, res) => {
 // GET endpoint for company-specific questions
 app.get('/api/questions/:company', async (req, res) => {
   const company = req.params.company.toLowerCase();
-  
+
   // Construct the URL for the CSV file based on the company name
   // console.log(company);
   // console.log(COMPANIES);
@@ -87,6 +92,7 @@ app.get('/api/questions/:company', async (req, res) => {
 
 // Google Sign-In endpoint
 app.post('/auth/google', async (req, res) => {
+ 
   try {
     const { credential } = req.body;
     const ticket = await client.verifyIdToken({
@@ -99,7 +105,7 @@ app.post('/auth/google', async (req, res) => {
 
     // Check if user exists
     let user = await User.findOne({ googleId });
-    
+    // console.log("user1", user);
     if (!user) {
       // Create new user if doesn't exist
       user = new User({
@@ -111,11 +117,19 @@ app.post('/auth/google', async (req, res) => {
       await user.save();
     }
 
+    // Generate a JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+    
     res.json({
       id: user._id,
       name: user.name,
       email: user.email,
-      solvedQuestions: user.solvedQuestions
+      solvedQuestions: user.solvedQuestions,
+      token // Send the token to the client
     });
   } catch (error) {
     console.error('Authentication error:', error);
@@ -126,12 +140,7 @@ app.post('/auth/google', async (req, res) => {
 // Get solved questions for the current user
 app.get('/api/user/solved-questions', async (req, res) => {
   try {
-    // Get user ID from Authorization header or query param
-    const userId = req.headers.authorization?.split(' ')[1] || req.query.userId;
-    
-    if (!userId) {
-      return res.status(401).json({ error: 'User ID required' });
-    }
+    const userId = req.user.id; // Use the decoded user ID
 
     const user = await User.findById(userId);
     if (!user) {
@@ -148,12 +157,11 @@ app.get('/api/user/solved-questions', async (req, res) => {
 // Mark a question as solved
 app.post('/api/user/solved-questions/add', async (req, res) => {
   try {
-    // Get user ID from Authorization header or request body
-    const userId = req.headers.authorization?.split(' ')[1] || req.body.userId;
+    const userId = req.user.id; // Use the decoded user ID
     const { title } = req.body;
-    
-    if (!userId || !title) {
-      return res.status(400).json({ error: 'User ID and question title are required' });
+
+    if (!title) {
+      return res.status(400).json({ error: 'Question title is required' });
     }
 
     const user = await User.findById(userId);
@@ -161,7 +169,6 @@ app.post('/api/user/solved-questions/add', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Add the question title to the solvedQuestions array if not already present
     if (!user.solvedQuestions.includes(title)) {
       user.solvedQuestions.push(title);
       await user.save();
@@ -177,12 +184,11 @@ app.post('/api/user/solved-questions/add', async (req, res) => {
 // Unmark a question as solved
 app.post('/api/user/solved-questions/remove', async (req, res) => {
   try {
-    // Get user ID from Authorization header or request body
-    const userId = req.headers.authorization?.split(' ')[1] || req.body.userId;
+    const userId = req.user.id; // Use the decoded user ID
     const { title } = req.body;
-    
-    if (!userId || !title) {
-      return res.status(400).json({ error: 'User ID and question title are required' });
+
+    if (!title) {
+      return res.status(400).json({ error: 'Question title is required' });
     }
 
     const user = await User.findById(userId);
@@ -190,7 +196,6 @@ app.post('/api/user/solved-questions/remove', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Remove the question title from the solvedQuestions array
     user.solvedQuestions = user.solvedQuestions.filter(questionTitle => questionTitle !== title);
     await user.save();
 
@@ -241,15 +246,15 @@ app.get('/api/discussions', async (req, res) => {
 // GET all discussions (as per your requirement #2)
 app.get('/api/discussions/all', async (req, res) => {
   try {
-    
-    
+
+
     const discussions = await Discussion.find()
       .sort({ createdAt: -1 }) // Sort by most recent first
       .populate('user', 'name email')
       .exec();
 
-   
-    
+
+
     res.json(discussions);
   } catch (error) {
     console.error('Error fetching all discussions:', error);
@@ -261,19 +266,19 @@ app.get('/api/discussions/all', async (req, res) => {
 app.post('/api/discussions/create', async (req, res) => {
   try {
 
-    
+
     const { title, content, tags, userId } = req.body;
-    
+
     // Validate input
     if (!title || !content || !tags || !userId) {
-      
+
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     // Validate user exists
     const user = await User.findById(userId);
     if (!user) {
-      
+
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -282,7 +287,7 @@ app.post('/api/discussions/create', async (req, res) => {
       tags.map(tag => tag.toLowerCase().trim()).filter(tag => tag)
     )];
 
-    
+
 
     const discussion = new Discussion({
       title: title.trim(),
@@ -295,11 +300,11 @@ app.post('/api/discussions/create', async (req, res) => {
     });
 
     await discussion.save();
-    
-    
+
+
     // Populate user details before sending response
     await discussion.populate('user', 'name email');
-    
+
     res.status(201).json(discussion);
   } catch (error) {
     console.error('Error creating discussion:', error);
@@ -315,7 +320,7 @@ app.post('/api/discussions', async (req, res) => {
   try {
     // Forward to the new endpoint
     const { title, content, tags, userId } = req.body;
-    
+
     // Validate input
     if (!title || !content || !tags || !userId) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -344,7 +349,7 @@ app.post('/api/discussions', async (req, res) => {
 
     await discussion.save();
     await discussion.populate('user', 'name email');
-    
+
     res.status(201).json(discussion);
   } catch (error) {
     console.error('Error creating discussion:', error);
@@ -358,8 +363,8 @@ app.post('/api/discussions', async (req, res) => {
 // Edit a discussion
 app.put('/api/discussions/edit/:id', async (req, res) => {
   try {
-  
-    
+
+
     const { id } = req.params;
     const { title, content, tags, userId } = req.body;
 
@@ -503,10 +508,10 @@ app.get('/api/comments/:discussionId', async (req, res) => {
 // Vote on a discussion or comment
 app.post('/api/discussions/vote', async (req, res) => {
   try {
-    
-    
+
+
     const { targetId, type, vote, userId } = req.body;
-    
+
     if (!targetId || !type || !vote || !userId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -547,7 +552,7 @@ app.post('/api/discussions/vote', async (req, res) => {
 
     await target.save();
     await target.populate('user', 'name email');
-    
+
     res.json(target);
   } catch (error) {
     console.error(`Error voting on ${req.body.type}:`, error);
@@ -583,7 +588,7 @@ app.post('/api/discussions/:id/vote', async (req, res) => {
 
     await discussion.save();
     await discussion.populate('user', 'name email');
-    
+
     res.json(discussion);
   } catch (error) {
     console.error('Error voting on discussion:', error);
@@ -597,11 +602,11 @@ app.post('/api/discussions/:id/vote', async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log("hello");
-
+  // console.log("hello");
+  // console.log(process.env.JWT_SECRET);
   console.log(`Server is running on port ${PORT}`);
 
-}); 
+});
 
 app.delete('/api/discussions/:discussionId', async (req, res) => {
   try {
@@ -628,7 +633,7 @@ app.delete('/api/discussions/:discussionId', async (req, res) => {
     console.error('Error deleting discussion:', error);
     res.status(500).json({ error: 'Failed to delete discussion' });
   }
-}); 
+});
 
 // Create a new discussion for a specific question
 app.post('/api/question-discussions', async (req, res) => {
@@ -797,27 +802,27 @@ app.get('/api/question-comment-reply/:discussionId', async (req, res) => {
 
 // POST endpoint to submit feedback
 app.post('/api/feedback', async (req, res) => {
-    const { userId, feedback } = req.body;
+  const { userId, feedback } = req.body;
 
-    // Validate input
-    if (!userId || !feedback) {
-        return res.status(400).json({ error: 'User ID and feedback are required' });
-    }
+  // Validate input
+  if (!userId || !feedback) {
+    return res.status(400).json({ error: 'User ID and feedback are required' });
+  }
 
-    try {
-        // Create a new feedback document
-        const newFeedback = new Feedback({
-            userId,
-            feedback
-        });
+  try {
+    // Create a new feedback document
+    const newFeedback = new Feedback({
+      userId,
+      feedback
+    });
 
-        // Save the feedback to the database
-        await newFeedback.save();
+    // Save the feedback to the database
+    await newFeedback.save();
 
-        res.status(201).json({ message: 'Feedback submitted successfully', feedback: newFeedback });
-    } catch (error) {
-        console.error('Error saving feedback:', error);
-        res.status(500).json({ error: 'Failed to submit feedback' });
-    }
+    res.status(201).json({ message: 'Feedback submitted successfully', feedback: newFeedback });
+  } catch (error) {
+    console.error('Error saving feedback:', error);
+    res.status(500).json({ error: 'Failed to submit feedback' });
+  }
 });
 
