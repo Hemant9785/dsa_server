@@ -10,6 +10,7 @@ const Discussion = require('./models/Discussion'); // Assuming you have a Discus
 const User = require('./models/User'); // Assuming you have a User model
 const QuestionDiscussion = require('./models/QuestionDiscussion'); // Import the new model
 const axios = require('axios');
+const Feedback = require('./models/Feedback'); // Import the Feedback model
 require('dotenv').config();
 // Import models from models directory
 // const User = require('./models/User');
@@ -792,5 +793,31 @@ app.get('/api/question-comment-reply/:discussionId', async (req, res) => {
     console.error('Error fetching nested comments:', error);
     res.status(500).json({ error: 'Failed to fetch nested comments' });
   }
+});
+
+// POST endpoint to submit feedback
+app.post('/api/feedback', async (req, res) => {
+    const { userId, feedback } = req.body;
+
+    // Validate input
+    if (!userId || !feedback) {
+        return res.status(400).json({ error: 'User ID and feedback are required' });
+    }
+
+    try {
+        // Create a new feedback document
+        const newFeedback = new Feedback({
+            userId,
+            feedback
+        });
+
+        // Save the feedback to the database
+        await newFeedback.save();
+
+        res.status(201).json({ message: 'Feedback submitted successfully', feedback: newFeedback });
+    } catch (error) {
+        console.error('Error saving feedback:', error);
+        res.status(500).json({ error: 'Failed to submit feedback' });
+    }
 });
 
